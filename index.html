@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Negative Numbers and VoiceOver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Negative Numbers and VoiceOver</h1>
+    <p><a href="https://github.com/russmaxdesign/negative-numbers">GitHub page</a></p>
+
+    <h2>Background</h2>
+    <p>In default mode OSX VoiceOver ignores some symbols such as the dash
+    symbol ("-"). This can cause issues when presenting information such as
+    negative numbers as the "negative" aspect of the number is ignored.</p>
+    <p>If this is a concern for individuals, they can change their individual
+    verbosity settings and <a href="https://support.apple.com/en-au/guide/voiceover/hear-punctuation-mchlp2703">set punctuation to "all"</a>.</p>
+    <p>But what if you want to make sure negative numbers are announced
+    accurately for all VoiceOver users, regardless of their verbosity settings?</p>
+    <h2>Tests</h2>
+    <p>Below are a series of tests and results gathered from different peoples
+    suggestions in a mail list thread.</p>
+    <p>The pass and fail status are solely based on whether the solution
+    announces the "minus" as part of the number, not on whether the symbol
+    should or should not be announced as a minus.</p>
+    <p>For example, <i>Test 4. 'En Dash'</i> and <i>Test 5. 'Non-breaking
+    Hyphen'</i> do not pass as the minus symbol is not announced. However,
+    these symbols <b>should not</b> be announced as minus symbols.</p>
+
+    <h2>Test examples</h2>
+    <h3>Test 1. Negative number</h3>
+    <div class="example">-36</div>
+    <figure>
+<pre><code class="language-markup">-36</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Three Six". <b class="fail">FAIL</b></p>
+
+    <h3>Test 2. Negative number with space</h3>
+    <div class="example">- 45</div>
+    <figure>
+<pre><code class="language-markup">- 45</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Four Five". <b class="fail">FAIL</b></p>
+
+    <h3>Test 3. Negative number inside brackets</h3>
+    <div class="example">(-63)</div>
+    <figure>
+<pre><code class="language-markup">(-63)</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Six Three". <b class="fail">FAIL</b></p>
+
+    <h3>Test 4. Negative number with 'EN DASH' (U+2013)</h3>
+    <div class="example">&#x2013;42</div>
+    <figure>
+<pre><code class="language-markup">#x201342</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Four Two". <b class="fail">FAIL</b></p>
+
+    <h3>Test 5. Negative number with 'NON-BREAKING HYPHEN' (U+2011)</h3>
+    <div class="example">&#x2011;68</div>
+    <figure>
+<pre><code class="language-markup">#x2011;68</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Six Eight". <b class="fail">FAIL</b></p>
+
+    <h3>Test 6. Negative number with 'MINUS SIGN' (U+2212)</h3>
+    <div class="example">&#x2212;76</div>
+    <figure>
+<pre><code class="language-markup">#x2212;76</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Minus Seven Six". <b class="pass">PASS</b></p>
+
+    <h3>Test 7. Negative number with HTML named entity "minus"</h3>
+    <div class="example">&minus;22</div>
+    <figure>
+<pre><code class="language-markup">minus;22</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Minus Two Two". <b class="pass">PASS</b></p>
+
+    <h3>Test 8. Negative number with aria-label</h3>
+    <div class="example"><span aria-label="minus 91">-91</span></div>
+    <figure>
+<pre><code class="language-markup">&lt;span aria-label="minus 91"&gt;-91&lt;/span&gt;</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Minus Nine One Group". <b class="pass">PASS</b></p>
+
+    <h3>Test 9. Negative number with aria-label - and role="img"</h3>
+    <div class="example"><span role="img" aria-label="minus 59">-59</span></div>
+    <figure>
+<pre><code class="language-markup">&lt;span role="img" aria-label="minus 59"&gt;
+  -59
+&lt;/span&gt;</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Minus Five Nine Image". <b class="pass">PASS</b></p>
+
+    <h3>Test 10. Negative number with hidden "minus" as text</h3>
+    <div class="example"><span class="sr-only">Minus</span><span aria-hidden="true">-</span>78</div>
+    <figure>
+<pre><code class="language-markup">&lt;span class="sr-only"&gt;Minus&lt;/span&gt;
+&lt;span aria-hidden="true"&gt;-&lt;/span&gt;
+78</code></pre>
+    </figure>
+    <p>Result in default VoiceOver: "Minus [Pause] Seven Eight". <b class="pass">PASS</b></p>
+
+    <h2>Results</h2>
+    <p><i>Test 6</i> and <i>Test 7</i> are easy to apply and pass the test (i.e
+    they announce the word "minus" associated with the number for VoiceOver).</p>
+    <p>Even though <i>Test 8</i> passes the test, it should not be used as the
+    <code>aria-label</code> is applied to the <code>&lt;span&gt;</code> element
+    which is non-interactive and does not have an aria-role. This means that it
+    <a href="https://www.w3.org/TR/using-aria/#label-support">may not be well
+    supported by Asssitive Technologies</a>. This could be resolved by giving
+    the element a <code>role</code> as per <i>Test 9</i>.</p>
+    <p>Even though <i>Test 9</i> passes the test, it is not recommended. It uses
+    a <code>&lt;span&gt;</code> element which has an aria-role of "img"
+    <a href="https://tink.uk/accessible-emoji/">as described by Tink</a> - so it
+    should be supported. However, the solution is then announced as an image.</p>
+    <p>Even though <i>Test 10</i> passes the test, it is not recommended as it
+    is hard to apply and require the user to move to the minus symbol and number
+    separately when navigating in line-by-line mode.</p>
+
+    <p><a href="https://github.com/russmaxdesign/negative-numbers">GitHub page</a></p>
+  </div>
+
+<script src="assets/js/prism.js"></script>
+</body>
+</html>
